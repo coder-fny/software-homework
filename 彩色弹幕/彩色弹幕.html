@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>彩色弹幕</title>
+	<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css">  
+	<script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	<script type="text/javascript">
+		document.onkeydown = function(event){
+			var e = event || window.event || arguments.callee.caller.arguments[0];
+			if(e && e.keyCode == 13){
+				send();
+			}
+		}
+		function send(){
+			var context = document.getElementById("context");
+			var contextLength = context.value.length;
+			if(context.value != ''){
+				var border = 495;
+				var place = document.getElementById("background");
+				p = getMotion(contextLength);
+				var message = place.appendChild(p);
+				var fontSize = getFontsize();
+				var fontPosition = getFontposition();
+				message.innerHTML = context.value;
+				message.style.color = '#'+getColor();
+				message.style.fontSize = fontSize + 'px';
+				while(fontPosition + fontSize >= border){
+					fontPosition = getFontposition();
+				}
+				message.style.marginTop = fontPosition + 'px';
+			}
+			context.value = '';
+			context.focus();
+		}
+		function getSpeed(length){
+			return 0.5 * length + 10;
+		}
+		function getColor(){
+			var colorStr = "";
+  			var randomArr = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
+  			for(var i = 0;i < 6;i++){
+    			colorStr += randomArr[Math.ceil(Math.random()*15)];
+  			}
+			return colorStr;
+		}
+		function getFontsize(){
+			fontSize = Math.ceil(Math.random() * 40)
+			while (fontSize < 10){
+				fontSize = Math.ceil(Math.random() * 40)
+			}
+			return fontSize;
+		}
+		function getFontposition(){
+			return Math.random()*500;
+		}
+		function getMotion(length){
+			switch (Math.ceil(Math.random()*2)) {
+				case 1:
+					var p = document.createElement("marquee");
+					p.loop = 1;
+					p.scrollAmount = getSpeed(length);
+					p.onmouseover = function(e){
+						e.srcElement.stop();
+					}
+					p.onmouseout = function(e){
+						e.srcElement.start();
+					}
+					return p;
+				case 2:
+					var p = document.createElement("p");
+					var message = document.getElementById("background").appendChild(p);
+					message.style.marginLeft = 1.6*getFontposition() + 'px';
+					setTimeout(function(){
+						p.remove();
+					},getSpeed(length)*200);
+					return p;
+			}
+		}
+	</script>
+	<style type="text/css">
+		.screen{
+			border: solid 1px black;
+			width: 100%;
+			height: 500px;
+			overflow: hidden;
+		}
+		.send{
+			margin-top: 10px;
+			text-align: center;
+		}
+		marquee{
+			position: absolute;
+		}
+		p{
+			position: absolute;
+		}
+	</style>
+</head>
+<body>
+	<div class="screen" id="background">
+
+	</div>
+	<div class="form-inline send">
+			<input type="text" class="form-control" id="context" maxlength="30" style="width: 70%" placeholder="请输入要发送的弹幕（最多不超过30个字）">
+			<button class="btn btn-default" onclick="send()">发送</button>
+	</div>
+</body>
+</html>
